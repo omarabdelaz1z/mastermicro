@@ -1,36 +1,43 @@
 package com.example.micromasters.Entity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Topology {
     private String id;
-    private ArrayList<Component> components;
+    private List<Component> components;
 
     public Topology() {
         this.id = "";
         this.components = new ArrayList<>();
     }
 
-    public Topology(String id, ArrayList<Component> components) {
+    public Topology(String id, List<Component> components) {
         this.id = id;
         this.components = components;
     }
 
-    public Topology setId(String id) {
+    public void setId(String id) {
         this.id = id;
-        return this;
     }
 
-    public Topology setComponents(ArrayList<Component> components) {
+    public void setComponents(List<Component> components) {
         this.components = components;
-        return this;
     }
 
     public String getId() {
         return this.id;
     }
 
-    public ArrayList<Component> getComponents() {
+    public List<Component> getComponents() {
         return this.components;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                " id='" + getId() + "'" +
+                ", components='" + getComponents() + "'" +
+                "}";
     }
 }

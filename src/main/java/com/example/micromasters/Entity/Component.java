@@ -1,27 +1,24 @@
 package com.example.micromasters.Entity;
 
-import java.util.ArrayList;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Map;
 
 public class Component {
     private String id;
     private String type;
-    private JsonNode extraInfo;
 
-    private ArrayList<Device> network;
+    private Map<String, Map<String, Object>> info;
+
+    private Map<String, Map<String, Object>> network; // HashMap
 
     public Component() {
 
     }
 
-    public Component(String id, String type, JsonNode extraInfo, ArrayList<Device> network) {
+    public Component(String id, String type, Map<String, Map<String, Object>> info,
+            Map<String, Map<String, Object>> network) {
         this.id = id;
         this.type = type;
-        this.extraInfo = extraInfo;
+        this.info = info;
         this.network = network;
     }
 
@@ -35,13 +32,13 @@ public class Component {
         return this;
     }
 
-    public Component setNetwork(ArrayList<Device> network) {
+    public Component setNetwork(Map<String, Map<String, Object>> network) {
         this.network = network;
         return this;
     }
 
-    public Component setExtraInfo(JsonNode extraInfo) {
-        this.extraInfo = extraInfo;
+    public Component setInfo(Map<String, Map<String, Object>> info) {
+        this.info = info;
         return this;
     }
 
@@ -53,42 +50,21 @@ public class Component {
         return this.type;
     }
 
-    public ArrayList<Device> getNetwork() {
+    public Map<String, Map<String, Object>> getNetwork() {
         return this.network;
     }
 
-    public JsonNode getExtraInfo() {
-        return this.extraInfo;
+    public Map<String, Map<String, Object>> getInfo() {
+        return this.info;
     }
 
     @Override
     public String toString() {
-        try {
-            ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-
-            return mapper
-                    .readTree(mapper.writeValueAsString(this))
-                    .toPrettyString();
-
-        } catch (JsonProcessingException e) {
-
-        }
-        return id;
-    }
-
-    public static void main(String args[]) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode info = objectMapper.createObjectNode();
-        ObjectNode internal = objectMapper.createObjectNode();
-
-        internal.put("t1", "vdd");
-        internal.put("t2", "n1");
-
-        info.put("resistance", internal.toString());
-
-        Component component = new Component("res1", "resistor", info, new ArrayList<>());
-
-        System.out.println(component);
-
+        return "{" +
+                " id='" + getId() + "'" +
+                ", type='" + getType() + "'" +
+                ", extraInfo='" + getInfo() + "'" +
+                ", network='" + getNetwork() + "'" +
+                "}";
     }
 }

@@ -3,11 +3,16 @@ package com.example.micromasters.Backstore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import java.util.NoSuchElementException;
 
 import com.example.micromasters.Entity.Topology;
 
+/**
+ * InMemory implementation of ITopologyStore that uses List data stucture to
+ * store topologies in memory.
+ */
 public class InMemoryTopologyStore implements ITopologyStore {
     private List<Topology> store;
 

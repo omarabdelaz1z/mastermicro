@@ -1,10 +1,13 @@
 package com.example.micromasters.Retriever;
 
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.NoSuchFileException;
 
+/**
+ * FileRetriever is an IRetriever implementation to retrieve data from a file.
+ */
 public class FileRetriever implements IRetriever {
     @Override
     public String retrieve(String path) {
