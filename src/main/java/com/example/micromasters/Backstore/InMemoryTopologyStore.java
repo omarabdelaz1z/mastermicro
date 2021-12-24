@@ -46,7 +46,7 @@ public class InMemoryTopologyStore implements ITopologyStore {
         // TODO: Refactor Delete Code
         try {
             Optional<Topology> optional = store.stream()
-                    .filter(topology -> (topology.getId().equalsIgnoreCase(topologyId))).findFirst();
+                    .filter(topology -> (topology.id.equalsIgnoreCase(topologyId))).findFirst();
 
             if (!optional.isPresent()) {
                 throw new NoSuchElementException("Topology with name: " + topologyId + "is not found.");

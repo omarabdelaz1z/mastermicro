@@ -9,10 +9,10 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import com.example.micromasters.Entity.Component;
+import com.example.micromasters.Entity.Detail;
 import com.example.micromasters.Retriever.FileRetriever;
 import com.example.micromasters.Retriever.IRetriever;
 
@@ -24,11 +24,33 @@ public class ComponentJsonMapper implements IDataMapper<Component> {
 
     @Override
     public String serialize(Component component) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode wholeComponent = mapper.createObjectNode();
         try {
-            ObjectMapper mapper = new ObjectMapper()
-                    .enable(SerializationFeature.INDENT_OUTPUT);
-            return mapper.writeValueAsString(component);
-        } catch (JsonProcessingException e) {
+
+            for (Field field : component.getClass().getDeclaredFields()) {
+                String key = field.getName();
+                Object value = field.get(component);
+
+                if (!(value instanceof Map)) {
+                    wholeComponent.put(key, (String) value);
+                }
+
+                else {
+                    Map<String, Detail> info = (Map<String, Detail>) (value);
+
+                    String infoKey = info.keySet().iterator().next();
+                    JsonNode infoDetail = mapper.valueToTree(info.values().stream().findFirst().get().detail);
+
+                    if (key.equals("info")) {
+                        wholeComponent.set(infoKey, infoDetail);
+                    } else {
+                        wholeComponent.set(infoKey, infoDetail);
+                    }
+                }
+            }
+            return wholeComponent.toPrettyString();
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -50,26 +72,25 @@ public class ComponentJsonMapper implements IDataMapper<Component> {
                 JsonNode value = keyValuePair.getValue();
 
                 if (value.isContainerNode()) {
-                    Map<String, Map<String, Object>> root = new HashMap<>();
+                    Map<String, Detail> root = new HashMap<>();
 
                     Map<String, Object> children = mapper.convertValue(value,
                             new TypeReference<Map<String, Object>>() {
                             });
 
-                    root.put(key, children);
+                    root.put(key, new Detail(children));
 
                     if (key.equalsIgnoreCase("netlist"))
-                        component.setNetwork(root);
+                        component.network = root;
 
                     else
-                        component.setInfo(root);
+                        component.info = root;
 
                     continue;
                 }
 
                 if (value.isTextual()) {
                     Field specifiedField = component.getClass().getDeclaredField(key);
-                    specifiedField.setAccessible(true);
                     specifiedField.set(component, value.textValue());
                 }
             }
@@ -79,15 +100,5 @@ public class ComponentJsonMapper implements IDataMapper<Component> {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static void main(String args[]) {
-        IRetriever iRetriever = new FileRetriever();
-        // ITopologyStore topologyStore = new InMemoryTopologyStore();
-        String data = iRetriever.retrieve("component.json");
-        IDataMapper<Component> cMapper = new ComponentJsonMapper();
-        Component component = cMapper.deserialize(data);
-
-        System.out.println(cMapper.serialize(component));
     }
 }
