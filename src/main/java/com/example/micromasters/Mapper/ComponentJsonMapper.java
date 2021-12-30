@@ -13,43 +13,40 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import com.example.micromasters.Entity.Component;
 import com.example.micromasters.Entity.Detail;
-import com.example.micromasters.Retriever.FileRetriever;
-import com.example.micromasters.Retriever.IRetriever;
 
 public class ComponentJsonMapper implements IDataMapper<Component> {
-
-    public ComponentJsonMapper() {
-
-    }
-
     @Override
     public String serialize(Component component) {
         ObjectMapper mapper = new ObjectMapper();
-        ObjectNode wholeComponent = mapper.createObjectNode();
+        ObjectNode componentNode = mapper.createObjectNode();
+
         try {
 
             for (Field field : component.getClass().getDeclaredFields()) {
                 String key = field.getName();
                 Object value = field.get(component);
 
-                if (!(value instanceof Map)) {
-                    wholeComponent.put(key, (String) value);
-                }
+                if (!(value instanceof Map))
+                    componentNode.put(key, (String) value);
 
                 else {
-                    Map<String, Detail> info = (Map<String, Detail>) (value);
+                    Map<String, Detail> data = (Map<String, Detail>) (value);
 
-                    String infoKey = info.keySet().iterator().next();
-                    JsonNode infoDetail = mapper.valueToTree(info.values().stream().findFirst().get().detail);
+                    String dataKey = data.keySet().iterator().next();
+                    JsonNode dataDetail = mapper.valueToTree(
+                            data.values()
+                                    .stream()
+                                    .findFirst()
+                                    .get().detail);
 
-                    if (key.equals("info")) {
-                        wholeComponent.set(infoKey, infoDetail);
-                    } else {
-                        wholeComponent.set(infoKey, infoDetail);
-                    }
+                    if (key.equals("info"))
+                        componentNode.set(dataKey, dataDetail);
+
+                    else
+                        componentNode.set(dataKey, dataDetail);
                 }
             }
-            return wholeComponent.toPrettyString();
+            return componentNode.toPrettyString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -62,8 +59,8 @@ public class ComponentJsonMapper implements IDataMapper<Component> {
             Component component = new Component();
 
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonObject = mapper.readTree(data);
-            Iterator<Entry<String, JsonNode>> iterator = jsonObject.fields();
+            JsonNode componentNode = mapper.readTree(data);
+            Iterator<Entry<String, JsonNode>> iterator = componentNode.fields();
 
             while (iterator.hasNext()) {
                 Entry<String, JsonNode> keyValuePair = iterator.next();

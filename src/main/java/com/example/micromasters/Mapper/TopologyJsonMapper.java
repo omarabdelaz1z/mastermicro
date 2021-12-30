@@ -16,8 +16,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.example.micromasters.Entity.Component;
 import com.example.micromasters.Entity.Topology;
-import com.example.micromasters.Retriever.FileRetriever;
-import com.example.micromasters.Retriever.IRetriever;
 
 public class TopologyJsonMapper implements IDataMapper<Topology> {
 

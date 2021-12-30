@@ -1,16 +1,16 @@
 package com.example.micromasters.Backstore;
 
-import java.util.HashMap;
 import java.util.List;
 import com.example.micromasters.Entity.Topology;
 
 /**
- * ITopologyStore is a storage API to create, read and delete operations.
+ * ITopologyStore is a storage API to create, read and delete topologies from a
+ * given backstorage.
  */
 public interface ITopologyStore {
-    public Topology create(Topology topology);
+    public boolean create(Topology topology);
 
-    public List<Topology> read(HashMap<String, String> query);
+    public List<Topology> read(String id);
 
-    public Topology delete(String topologyId);
+    public boolean delete(String id) throws Exception;
 }

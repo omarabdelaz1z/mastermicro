@@ -1,11 +1,10 @@
 package com.example.micromasters.Backstore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-
-import java.util.NoSuchElementException;
 
 import com.example.micromasters.Entity.Topology;
 
@@ -21,44 +20,44 @@ public class InMemoryTopologyStore implements ITopologyStore {
     }
 
     @Override
-    public Topology create(Topology topology) {
-        // TODO: Add topology to the store.
-        /**
-         * 1. Check if the given topology is already exists.
-         * 1.1 if exists, don't insert. Otherwise, (2)
-         * 2. Insert the topology in the store.
-         */
-        return null;
+    public boolean create(Topology topology) {
+        Optional<Topology> opt = store.stream()
+                .filter(stored -> stored.id.equals(topology.id))
+                .findAny();
+
+        if (opt.isPresent())
+            return false;
+
+        store.add(topology);
+        return true;
     }
 
     @Override
-    public List<Topology> read(HashMap<String, String> query) {
-        if (query == null || query.size() == 0) {
+    public List<Topology> read(String id) {
+        if (Objects.isNull(id))
             return store;
-        }
-        // TODO: filter store with the given query.
-        return new ArrayList<Topology>();
+
+        Optional<Topology> opt = store.stream()
+                .filter(stored -> stored.id.equals(id))
+                .findAny();
+
+        if (!opt.isPresent())
+            return null;
+
+        return new ArrayList<Topology>(Arrays.asList(opt.get()));
     }
 
     @Override
-    public Topology delete(String topologyId) {
+    public boolean delete(String id) throws Exception {
+        if (Objects.isNull(id))
+            throw new Exception("Id must be given.");
 
-        // TODO: Refactor Delete Code
-        try {
-            Optional<Topology> optional = store.stream()
-                    .filter(topology -> (topology.id.equalsIgnoreCase(topologyId))).findFirst();
-
-            if (!optional.isPresent()) {
-                throw new NoSuchElementException("Topology with name: " + topologyId + "is not found.");
+        for (int i = 0; i < store.size(); i++) {
+            if (store.get(i).id.equals(id)) {
+                store.remove(i);
+                return true;
             }
-
-            Topology topology = optional.get();
-            store.remove(topology);
-
-            return topology;
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
         }
+        return false;
     }
 }

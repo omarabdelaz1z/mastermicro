@@ -1,5 +1,7 @@
 package com.example.micromasters.Utils;
 
+import java.io.FileOutputStream;
+
 /**
  * Provide basic helper functions to assist the program.
  */
@@ -11,7 +13,14 @@ public class Utils {
      * @param path    "String"
      * @return true if it is written successfully. Otherwise, false.
      */
-    public static boolean writeToFile(String content, String path) {
-        return true;
+    public static void writeToFile(String content, String path) {
+        try {
+            FileOutputStream fStream = new FileOutputStream(path);
+            byte[] bytes = content.getBytes();
+            fStream.write(bytes);
+            fStream.close();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 }
